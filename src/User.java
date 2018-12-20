@@ -31,34 +31,50 @@ public class User {
 	private int gridx;//当前用户所在网格单元的x坐标
 	private int gridy;//当前用户所在网格单元的y坐标
 	private QuerySpace querySpace;//当前用户的查询空间
+	private Parameter parameter;//当前用户的偏移参数
 
 	/**
 	 * 网格结构转换
-	 * @param 起始点的x坐标
-	 * @param 起始点的y坐标
-	 * @param 每个网格单元的边长
+	 * @param x 用户的x坐标（真实）
+	 * @param y 用户的y坐标（真实）
 	 */
 	public User(double x,double y,QuerySpace querySpace) {
-		this.querySpace=querySpace;
 		this.x=x;
 		this.y=y;
+		this.querySpace=querySpace;
 		this.gridx=(int) (x-querySpace.getStartx())/(querySpace.getXlength()/querySpace.getN());
 		this.gridy=(int) (y-querySpace.getStarty())/(querySpace.getYlength()/querySpace.getN());
 	}
 	
-	//当前用户的查询区域表示
-	public Area getQueryArea(int r){
-		Area querArea=new Area();
+	/**
+	 * 计算当前用户查询区域
+	 * @param r 设定的查询半径
+	 * @return queryArea 得到用户的查询区域
+	 */
+	public Area getQueryArea(double x,double y,int r){
+		Area queryArea=new Area();
 		//网格坐标
 		int minx=(int) (x-r-querySpace.getStartx())/(querySpace.getXlength()/querySpace.getN());
 		int maxx=(int) (x+r-querySpace.getStartx())/(querySpace.getXlength()/querySpace.getN());
 		int miny=(int) (y-r-querySpace.getStarty())/(querySpace.getYlength()/querySpace.getN());
 		int maxy=(int) (y+r-querySpace.getStarty())/(querySpace.getYlength()/querySpace.getN());
-		querArea.setMaxx(maxx);
-		querArea.setMaxy(maxy);
-		querArea.setMinx(minx);
-		querArea.setMiny(miny);
-		return querArea;
+		queryArea.setMaxx(maxx);
+		queryArea.setMaxy(maxy);
+		queryArea.setMinx(minx);
+		queryArea.setMiny(miny);
+		return queryArea;
+		
+	}
+	
+	public Area moveQueryArea(int r){
+		int direction=this.parameter.getDirection();
+		int distance=this.parameter.getDiatance();
+		Area moveArea = new Area();
+		double xx=x+distance*Math.cos(direction);
+		double yy=y+distance*Math.sin(direction);
+		moveArea=getQueryArea(xx, yy, r);
+		return moveArea;
+		
 		
 	}
 
@@ -74,7 +90,7 @@ public class User {
 		MSGu2a.put("ID",userID );
 		MSGu2a.put("Region", knnAreas);
 		MSGu2a.put("KEY", "K1,K2,K3,K4");
-		MSGu2a.put("S", getQueryArea(r));
+		MSGu2a.put("S", moveQueryArea(r));
 		MSGu2a.put("POI", poiClass);
 		MSGu2a.put("grid_structure", querySpace);
 		return MSGu2a;
@@ -171,7 +187,7 @@ public class User {
 			candidate.sort(comparator);
 		}
 		while (count<k) {
-			kanonymityList.add(candidate.get(count).getQueryArea(r));
+			kanonymityList.add(candidate.get(count).moveQueryArea(r));
 			count++;
 		}
 		return kanonymityList;
@@ -202,7 +218,7 @@ public class User {
 			count++;			
 		}
 		for(User user:kanonymityList){
-			kanonymityAreas.add(user.getQueryArea(r));
+			kanonymityAreas.add(user.moveQueryArea(r));
 		}
 		return kanonymityAreas;
 	}

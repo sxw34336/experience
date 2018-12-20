@@ -20,7 +20,7 @@ public class Main {
 			long endTime = System.currentTimeMillis();
 			System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
 		}*/
-		QuerySpace querySpace=new QuerySpace(2700,4900,20900,30800,200);
+		/*QuerySpace querySpace=new QuerySpace(2700,4900,20900,30800,200);
 		User user=new User(0, 0, querySpace);
 		LBS lbs=new LBS();
 		String content="12345"; String password = "123";
@@ -37,7 +37,19 @@ public class Main {
         byte[] twoStrResult = ParseSystemUtil.parseHexStr2Byte(hexStrResult);
         // 解密
         byte[] decrypt = lbs.decrypt(encrypt, password);
-        System.out.println("解密后的内容：" + new String(decrypt));      
+        System.out.println("解密后的内容：" + new String(decrypt)); */ 
+		HeapSort hp=new HeapSort();
+		int[] arr={87,43,78,32,17,65,41,9,122};
+		System.out.println("排序前：");
+		for (int i = 0; i < arr.length; i++) {
+			System.out.print(arr[i]+"  ");
 		
+		}
+		System.out.println();
+		hp.heapSort(arr);
+		System.out.println("排序后：");
+		for (int i = 0; i < arr.length; i++) {
+			System.out.print(arr[i]+"  ");
+		}
 }
 }

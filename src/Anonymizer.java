@@ -14,7 +14,11 @@ public class Anonymizer {
 	private Area cacheArea;
 	private Area queryArea;
 	private int[] identifierOfGrid;
-	//根据所得k个用户构建匿名区
+	/**
+	 * 生成匿名空间
+	 * @param areaList 得到region集合
+	 * @return 生成大的匿名空间
+	 */
 	public Area createAnonymityArea(List<Area> areaList){
 		List<Integer> xList=new ArrayList<Integer>();
 		List<Integer> yList=new ArrayList<Integer>();
@@ -35,6 +39,11 @@ public class Anonymizer {
 		
 	}
 	
+	/**
+	 * 生成查询MSG
+	 * @param MSGu2a 得到来自用户的MSG
+	 * @return 生成查询MSG
+	 */
 	public Map<String, Object> generateMSGA2L(Map<String, Object> MSGu2a){
 		List<Area> areaList=(List<Area>)MSGu2a.get("Region");
 		Area c_region=createAnonymityArea(areaList);
@@ -47,12 +56,8 @@ public class Anonymizer {
 	}
 	
 	//判断是否在缓存中
-	public int isCacheContains(){
-		if((queryArea.getMaxx()<=cacheArea.getMaxx())&&(queryArea.getMaxy()<=cacheArea.getMaxy())&&(queryArea.getMinx()>=cacheArea.getMinx())&&(queryArea.getMiny()>=cacheArea.getMiny())){
-			return 1;
-		}else{
-			return 0;
-		}
+	public void isCacheContains(){
+	
 	}
 	
 	
