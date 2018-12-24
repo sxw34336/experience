@@ -38,18 +38,23 @@ public class Main {
         // 解密
         byte[] decrypt = lbs.decrypt(encrypt, password);
         System.out.println("解密后的内容：" + new String(decrypt)); */ 
-		HeapSort hp=new HeapSort();
-		int[] arr={87,43,78,32,17,65,41,9,122};
-		System.out.println("排序前：");
-		for (int i = 0; i < arr.length; i++) {
-			System.out.print(arr[i]+"  ");
-		
+		dataProcess data=new dataProcess();
+		List<User> userList=data.dataGen("src/gendata.txt");
+		QuerySpace querySpace=new QuerySpace(2700,4900,20900,30800,200);
+		Anonymizer anonymizer=new Anonymizer();
+		long startTime = System.currentTimeMillis();
+		int timestamp=0;
+		for(User user:userList){
+			
+			
+			if(user.getParameter()==null){
+				
+				user.setParameter(new Parameter(500, 0, timestamp++));
+			}
+			//System.out.println(user.getParameter().getTimestamp());
+			user.searchKnn2(500, 50, userList);
 		}
-		System.out.println();
-		hp.heapSort(arr);
-		System.out.println("排序后：");
-		for (int i = 0; i < arr.length; i++) {
-			System.out.print(arr[i]+"  ");
-		}
+		long endTime = System.currentTimeMillis();
+		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
 }
 }

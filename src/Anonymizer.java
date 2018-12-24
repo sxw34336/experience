@@ -14,6 +14,7 @@ public class Anonymizer {
 	private Area cacheArea;
 	private Area queryArea;
 	private int[] identifierOfGrid;
+	private Map<Integer, Object> cacheSpace;//缓存内容：时间戳+result
 	/**
 	 * 生成匿名空间
 	 * @param areaList 得到region集合
@@ -56,14 +57,58 @@ public class Anonymizer {
 	}
 	
 	//判断是否在缓存中
-	public void isCacheContains(){
+	public boolean isCacheContains(User user){
+		if(cacheSpace.get(user.getParameter().getTimestamp())!=null){
+			return true;
+		}else {
+			return false;
+		}
 	
 	}
+	public Anonymizer() {
+		// TODO Auto-generated constructor stub
+	}
 	
+	//缓存当前用户的查询空间
+	public void UserCache(User user,int r){
+		cacheArea=user.moveQueryArea(r);
+	}
 	
 	//更新缓存
-	public void updateCache(Area anonymityArea){
-		
+	public void updateCache(Area anonymityArea,User queryUser){
+		cacheSpace.put(queryUser.getParameter().getTimestamp(), "result");
+	}
+
+	public Area getCacheArea() {
+		return cacheArea;
+	}
+
+	public void setCacheArea(Area cacheArea) {
+		this.cacheArea = cacheArea;
+	}
+
+	public Area getQueryArea() {
+		return queryArea;
+	}
+
+	public void setQueryArea(Area queryArea) {
+		this.queryArea = queryArea;
+	}
+
+	public int[] getIdentifierOfGrid() {
+		return identifierOfGrid;
+	}
+
+	public void setIdentifierOfGrid(int[] identifierOfGrid) {
+		this.identifierOfGrid = identifierOfGrid;
+	}
+
+	public Map<Integer, Object> getCacheSpace() {
+		return cacheSpace;
+	}
+
+	public void setCacheSpace(Map<Integer, Object> cacheSpace) {
+		this.cacheSpace = cacheSpace;
 	}
 
 }

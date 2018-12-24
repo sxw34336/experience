@@ -20,6 +20,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.omg.CORBA.PUBLIC_MEMBER;
+
 
 
 public class User {
@@ -65,14 +67,31 @@ public class User {
 		return queryArea;
 		
 	}
-	
+	public Parameter getParameter() {
+		return parameter;
+	}
+
+	public void setParameter(Parameter parameter) {
+		this.parameter = parameter;
+	}
+
+	/**
+	 * 
+	 * @param r 输入查询半径
+	 * @return 获得偏移后的查询区域（调用getQueryArea）
+	 */
 	public Area moveQueryArea(int r){
-		int direction=this.parameter.getDirection();
-		int distance=this.parameter.getDiatance();
+		int direction=0;
+		int distance=0;
+		if(this.parameter!=null){
+			direction=this.parameter.getDirection();
+			distance=this.parameter.getDiatance();
+		}
 		Area moveArea = new Area();
 		double xx=x+distance*Math.cos(direction);
 		double yy=y+distance*Math.sin(direction);
 		moveArea=getQueryArea(xx, yy, r);
+		//System.out.println("偏移前：（"+this.x+","+this.y+")"+"   偏移后：（"+xx+","+yy+")");
 		return moveArea;
 		
 		
@@ -107,6 +126,39 @@ public class User {
 		double distance=Math.sqrt(Math.pow(this.x-x, 2)+Math.pow(this.y-y, 2));
 		return distance;
 	}
+	
+	public void UpToDown(int i,int k,List<User> topkList){
+		int t1,t2,pos;
+		t1=2*i;
+		t2=t1+1;
+		if(t1>k)
+			return;
+		else{
+			if(t2>k){
+				pos=t1;
+			}
+			else{
+				double d1=getDistance(topkList.get(t1-1));
+				double d2=getDistance(topkList.get(t2-1));
+				pos=d1>d2?t1:t2;
+			}
+			double dis1=getDistance(topkList.get(i-1));
+			double dis2=getDistance(topkList.get(pos-1));
+			if(dis1<dis2){
+				Collections.swap(topkList, i-1, pos-1);
+				UpToDown(pos, k, topkList);
+			}
+		}
+	}
+	
+	public void crateHeap(int k,List<User> topkList){
+		int i;
+		int pos=k/2;
+		for(i=pos;i>=1;i--){
+			UpToDown(i, k, topkList);
+		}
+	}
+	
 	
 	Comparator<User> comparator=new Comparator<User>() {
 		@Override
@@ -192,11 +244,12 @@ public class User {
 		}
 		return kanonymityList;
 	}
-	//改进top-k
+	//改进top-k(MinHeap)
 	public List<Area> searchKnn2(int r,int k,List<User> userList){
 		List<User> candidate=new ArrayList<User>();
 		List<User> kanonymityList=new ArrayList<User>();
 		List<Area> kanonymityAreas=new ArrayList<>();
+		List<User> topkList=new ArrayList<>();
 		int count=0;
 		for(int i=0;i<userList.size();i++){
 			User user=userList.get(i);
@@ -204,24 +257,41 @@ public class User {
 				candidate.add(user);
 			}
 		}
-		double mindistance=Double.POSITIVE_INFINITY;
-		while (count<k) {
-			int id=0;
-			for(User user:candidate){
-				double distance=getDistance(user);
-				if((kanonymityList.contains(user)==false)&&distance<mindistance){
-					id=user.getUserID();
-					mindistance=distance;
+		//System.out.println("candidate:"+candidate.size());
+		if(candidate.size()<k){
+			System.out.println("匿名失败");
+			return null;
+		}
+		for(int j=0;j<k;j++){
+			topkList.add(candidate.get(j));
+		}
+		//System.out.println("topk:"+topkList.size());
+		crateHeap(k, topkList);
+		for(int z=k;z<candidate.size();z++){
+			if(getDistance(candidate.get(z))<getDistance(topkList.get(0))){
+				topkList.set(0, candidate.get(z));
+				UpToDown(1, k, topkList);
+			}
+		}
+		//设置k个用户的偏移参数
+		for(User user:userList){
+			for(User topkUser:topkList){
+				if(user.getUserID()==topkUser.getUserID()){
+					user.setParameter(this.parameter);
 				}
 			}
-			kanonymityList.add(userList.get(id-1));
-			count++;			
+			/*if(user.getParameter()!=null){
+				System.out.println("ID:"+user.getUserID()+"  Time:"+user.getParameter().getTimestamp());
+			}*/
+			
 		}
 		for(User user:kanonymityList){
 			kanonymityAreas.add(user.moveQueryArea(r));
 		}
 		return kanonymityAreas;
 	}
+	
+	
 	
 	//getter setter
 	public double getX() {
