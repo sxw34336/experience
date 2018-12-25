@@ -3,6 +3,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.UserDataHandler;
+
 
 public class Main {
 	public static void main(String[] args) {
@@ -42,19 +44,37 @@ public class Main {
 		List<User> userList=data.dataGen("src/gendata.txt");
 		QuerySpace querySpace=new QuerySpace(2700,4900,20900,30800,200);
 		Anonymizer anonymizer=new Anonymizer();
-		long startTime = System.currentTimeMillis();
+		Map<Integer, List<User>> cacheSpace= new HashMap<>();
+		anonymizer.setCacheSpace(cacheSpace);
+		LBS lbs=new LBS();
+		lbs.querySpace=querySpace;
+/*		long startTime = System.currentTimeMillis();*/
+		int radius=0;
+		int k=0;
 		int timestamp=0;
 		for(User user:userList){
-			
-			
-			if(user.getParameter()==null){
-				
+			if(!(anonymizer.isCacheContains(user))){	
 				user.setParameter(new Parameter(500, 0, timestamp++));
+				Map<String, Object> userMSG=user.generateMSG(500, 50, userList);//用户生成发送信息(r,k,userlist)
+				System.out.println(userMSG);
+				anonymizer.cacheUserInfo(user, radius);//匿名器存储用户查询信息
+				System.out.println((List<Area>) userMSG.get("Region"));
+				anonymizer.createAnonymityArea((List<Area>) userMSG.get("Region"));
+				Map<String, Object> MSGa2l=anonymizer.generateMSGA2L(userMSG);//匿名器生成信息
+				List<User> result=lbs.search(MSGa2l, userList, querySpace);//LBS查询得到结果
+				anonymizer.updateCache(result);
+				anonymizer.resultFilter();
+				
+			}else {
+				anonymizer.cacheUserInfo(user, radius);//匿名器存储用户查询信息
+				Map<Integer, List<User>> cacheMap=anonymizer.getCacheSpace();//获取缓存
+				List<User> beforeResult=cacheMap.get(user.getParameter().getTimestamp());//寻找缓存中的结果
+				anonymizer.resultFilter();
 			}
 			//System.out.println(user.getParameter().getTimestamp());
-			user.searchKnn2(500, 50, userList);
+			
 		}
-		long endTime = System.currentTimeMillis();
-		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
+/*		long endTime = System.currentTimeMillis();
+		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");*/
 }
 }

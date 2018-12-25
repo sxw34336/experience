@@ -11,16 +11,19 @@ import java.util.Set;
 
 public class Anonymizer {
 	
-	private Area cacheArea;
-	private Area queryArea;
-	private int[] identifierOfGrid;
-	private Map<Integer, Object> cacheSpace;//缓存内容：时间戳+result
+	private Area cacheArea;//缓存当前查询用户的查询区域
+	private Area queryArea;//缓存生成的匿名查询区域
+	private int[] identifierOfGrid;//网格标识
+	private int timestamp;//当期用户的时间戳
+	private Map<Integer, List<User>> cacheSpace;//缓存内容：时间戳+result
+	
+	
 	/**
 	 * 生成匿名空间
 	 * @param areaList 得到region集合
 	 * @return 生成大的匿名空间
 	 */
-	public Area createAnonymityArea(List<Area> areaList){
+	public void createAnonymityArea(List<Area> areaList){
 		List<Integer> xList=new ArrayList<Integer>();
 		List<Integer> yList=new ArrayList<Integer>();
 		Area kanonymityArea=new Area();
@@ -36,7 +39,7 @@ public class Anonymizer {
 		kanonymityArea.setMinx(xList.get(0));
 		kanonymityArea.setMaxy(yList.get(yList.size()-1));
 		kanonymityArea.setMiny(yList.get(0));
-		return kanonymityArea;
+		this.queryArea=kanonymityArea;
 		
 	}
 	
@@ -46,39 +49,70 @@ public class Anonymizer {
 	 * @return 生成查询MSG
 	 */
 	public Map<String, Object> generateMSGA2L(Map<String, Object> MSGu2a){
-		List<Area> areaList=(List<Area>)MSGu2a.get("Region");
-		Area c_region=createAnonymityArea(areaList);
 		Map<String, Object> MSGa2l=new HashMap<String, Object>();
-		MSGa2l.put("C-Region", c_region);
+		MSGa2l.put("C-Region", this.queryArea);
 		MSGa2l.put("KEY",MSGu2a.get("KEY"));
+		MSGa2l.put("PARAMETER", MSGu2a.get("PARAMETER"));
 		MSGa2l.put("grid_structure", MSGu2a.get("grid_structure"));
 		MSGa2l.put("POI", MSGu2a.get("POI"));
 		return MSGa2l;
 	}
 	
-	//判断是否在缓存中
+	/**
+	 * 判断当前用户是否在缓存中
+	 * @param user 当前查询用户
+	 * @return 返回该用户是否在缓存中
+	 */
 	public boolean isCacheContains(User user){
-		if(cacheSpace.get(user.getParameter().getTimestamp())!=null){
+		if(user.getParameter()!=null){
 			return true;
 		}else {
 			return false;
 		}
 	
 	}
-	public Anonymizer() {
-		// TODO Auto-generated constructor stub
+	
+	public void cacheUserInfo(User user,int r){
+		this.timestamp=user.getParameter().getTimestamp();
+		this.cacheArea=user.moveQueryArea(r);
 	}
 	
-	//缓存当前用户的查询空间
-	public void UserCache(User user,int r){
-		cacheArea=user.moveQueryArea(r);
-	}
 	
 	//更新缓存
-	public void updateCache(Area anonymityArea,User queryUser){
-		cacheSpace.put(queryUser.getParameter().getTimestamp(), "result");
+	public void updateCache(List<User> result){
+		cacheSpace.put(timestamp,result);
+	}
+	
+	//判断是否在用户的查询区域内
+	private boolean isIN(Area queryArea,User poi){
+		if(poi.getGridx()<=queryArea.getMaxx()&&poi.getGridx()>=queryArea.getMinx()&&poi.getGridy()<=queryArea.getMaxy()&&poi.getGridy()>=queryArea.getMiny()){
+			return true;
+		}else{
+			return false;
+	 }
+	}
+	
+	/**
+	 * 结果过滤
+	 * @return 返回查询用户查询区域内的结果
+	 */
+	public List<User> resultFilter(){
+		List<User> cacheResult=(List<User>) cacheSpace.get(timestamp);
+		List<User> filterResult=new ArrayList<>();
+		int count=0;
+		for(User poi:cacheResult){
+			if(isIN(cacheArea, poi)){
+				filterResult.add(poi);
+				count++;
+			}
+		}
+		return filterResult;
+		
+		
 	}
 
+	//getter,setter
+	
 	public Area getCacheArea() {
 		return cacheArea;
 	}
@@ -103,12 +137,20 @@ public class Anonymizer {
 		this.identifierOfGrid = identifierOfGrid;
 	}
 
-	public Map<Integer, Object> getCacheSpace() {
+	public Map<Integer, List<User>> getCacheSpace() {
 		return cacheSpace;
 	}
 
-	public void setCacheSpace(Map<Integer, Object> cacheSpace) {
+	public void setCacheSpace(Map<Integer, List<User>> cacheSpace) {
 		this.cacheSpace = cacheSpace;
+	}
+
+	public int getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(int timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

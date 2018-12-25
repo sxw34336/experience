@@ -92,7 +92,7 @@ public class User {
 		double yy=y+distance*Math.sin(direction);
 		moveArea=getQueryArea(xx, yy, r);
 		//System.out.println("偏移前：（"+this.x+","+this.y+")"+"   偏移后：（"+xx+","+yy+")");
-		return moveArea;
+		return moveArea;//网格坐标
 		
 		
 	}
@@ -104,7 +104,7 @@ public class User {
 	 * @param userList 进行knn搜索的其他用户
 	 */
 	public Map<String, Object> generateMSG(Integer r,int k,List<User> userList){
-		List<Area> knnAreas=searchKnn(r,k, userList);
+		List<Area> knnAreas=searchKnn2(r,k, userList);
 		Map<String, Object> MSGu2a=new HashMap<String, Object>();
 		MSGu2a.put("ID",userID );
 		MSGu2a.put("Region", knnAreas);
@@ -112,6 +112,8 @@ public class User {
 		MSGu2a.put("S", moveQueryArea(r));
 		MSGu2a.put("POI", poiClass);
 		MSGu2a.put("grid_structure", querySpace);
+		MSGu2a.put("PARAMETER", this.getParameter());
+		MSGu2a.put("timestamp", this.getParameter().getTimestamp());
 		return MSGu2a;
 	}
 	
@@ -244,7 +246,7 @@ public class User {
 		}
 		return kanonymityList;
 	}
-	//改进top-k(MinHeap)
+	//改进top-k(MaxHeap)
 	public List<Area> searchKnn2(int r,int k,List<User> userList){
 		List<User> candidate=new ArrayList<User>();
 		List<User> kanonymityList=new ArrayList<User>();
@@ -273,6 +275,7 @@ public class User {
 				UpToDown(1, k, topkList);
 			}
 		}
+		kanonymityList=topkList;
 		//设置k个用户的偏移参数
 		for(User user:userList){
 			for(User topkUser:topkList){
@@ -288,6 +291,7 @@ public class User {
 		for(User user:kanonymityList){
 			kanonymityAreas.add(user.moveQueryArea(r));
 		}
+		System.out.println(kanonymityList.size());
 		return kanonymityAreas;
 	}
 	
