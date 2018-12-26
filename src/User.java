@@ -291,7 +291,7 @@ public class User {
 		for(User user:kanonymityList){
 			kanonymityAreas.add(user.moveQueryArea(r));
 		}
-		System.out.println(kanonymityList.size());
+		//System.out.println(kanonymityList.size());
 		return kanonymityAreas;
 	}
 	

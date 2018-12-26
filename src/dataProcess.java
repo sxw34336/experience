@@ -24,7 +24,7 @@ public class dataProcess {
 		}
 		List<User> pointList=new ArrayList<User>();
 		String line;
-		QuerySpace querySpace=new QuerySpace(2700,4900,20900,30800,200);
+		QuerySpace querySpace=new QuerySpace(400,4300,21900,30800,200);
 		try {
 			while ((line=bfr.readLine())!=null) {
 				String[] content=line.split("	");

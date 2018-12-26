@@ -36,7 +36,7 @@ public class LBS {
 		//System.out.println("minx:"+realArea.getMinx()+"maxx:"+realArea.getMaxx());
 		List<User> resultList=new ArrayList<User>();
 		for(User poi:poisList){
-			if(isIN(realArea, poi)){
+			if(isIN(realArea, poi)&&poi.getPoiClass()==poi_type){
 				User movepoi=new User(poi.getX()+distance*Math.cos(direction), poi.getY()+distance*Math.sin(direction), querySpace);
 				resultList.add(poi);
 			}
