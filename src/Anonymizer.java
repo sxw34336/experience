@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,21 +25,33 @@ public class Anonymizer {
 	 * @return 生成大的匿名空间
 	 */
 	public void createAnonymityArea(List<Area> areaList){
-		List<Integer> xList=new ArrayList<Integer>();
-		List<Integer> yList=new ArrayList<Integer>();
+		int maxx=0;
+		int maxy=0;
+		int minx=Integer.MAX_VALUE;
+		int miny=Integer.MAX_VALUE;
 		Area kanonymityArea=new Area();
 		for(Area area:areaList){
-			xList.add(area.getMaxx());
-			xList.add(area.getMinx());
-			yList.add(area.getMaxy());
-			yList.add(area.getMiny());
+			int amaxx=area.getMaxx();
+			int aminx=area.getMinx();
+			int amaxy=area.getMaxy();
+			int aminy=area.getMiny();
+			if(amaxx>maxx){
+				maxx=amaxx;
+			}
+			if(aminx<minx){
+				minx=aminx;
+			}
+			if(amaxy>maxy){
+				maxy=amaxy;
+			}
+			if(aminy<miny){
+				miny=aminy;
+			}
 		}
-		Collections.sort(xList);
-		Collections.sort(yList);
-		kanonymityArea.setMaxx(xList.get(xList.size()-1));
-		kanonymityArea.setMinx(xList.get(0));
-		kanonymityArea.setMaxy(yList.get(yList.size()-1));
-		kanonymityArea.setMiny(yList.get(0));
+		kanonymityArea.setMaxx(maxx);
+		kanonymityArea.setMinx(minx);
+		kanonymityArea.setMaxy(maxy);
+		kanonymityArea.setMiny(miny);
 		this.queryArea=kanonymityArea;
 		
 	}
@@ -76,16 +89,15 @@ public class Anonymizer {
 		this.timestamp=user.getParameter().getTimestamp();
 		this.cacheArea=user.moveQueryArea(r);
 	}
-	
-	
-	//更新缓存
 	public void updateCache(List<User> result){
 		cacheSpace.put(timestamp,result);
 	}
 	
 	//判断是否在用户的查询区域内
 	private boolean isIN(Area queryArea,User poi){
-		if(poi.getGridx()<=queryArea.getMaxx()&&poi.getGridx()>=queryArea.getMinx()&&poi.getGridy()<=queryArea.getMaxy()&&poi.getGridy()>=queryArea.getMiny()){
+		int gridx=poi.getGridx();
+		int gridy=poi.getGridy();
+		if(gridx<=queryArea.getMaxx()&&gridx>=queryArea.getMinx()&&gridy<=queryArea.getMaxy()&&gridy>=queryArea.getMiny()){
 			return true;
 		}else{
 			return false;
@@ -99,11 +111,9 @@ public class Anonymizer {
 	public List<User> resultFilter(){
 		List<User> cacheResult=(List<User>) cacheSpace.get(timestamp);
 		List<User> filterResult=new ArrayList<>();
-		int count=0;
 		for(User poi:cacheResult){
 			if(isIN(cacheArea, poi)){
 				filterResult.add(poi);
-				count++;
 			}
 		}
 		return filterResult;
