@@ -94,10 +94,10 @@ public class Anonymizer {
 	}
 	
 	//判断是否在用户的查询区域内
-	private boolean isIN(Area queryArea,User poi){
+	private boolean isIN(Area cacheArea,User poi){
 		int gridx=poi.getGridx();
 		int gridy=poi.getGridy();
-		if(gridx<=queryArea.getMaxx()&&gridx>=queryArea.getMinx()&&gridy<=queryArea.getMaxy()&&gridy>=queryArea.getMiny()){
+		if(gridx<=cacheArea.getMaxx()&&gridx>=cacheArea.getMinx()&&gridy<=cacheArea.getMaxy()&&gridy>=cacheArea.getMiny()){
 			return true;
 		}else{
 			return false;
