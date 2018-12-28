@@ -14,9 +14,9 @@ public class Anonymizer {
 	
 	private Area cacheArea;//缓存当前查询用户的查询区域
 	private Area queryArea;//缓存生成的匿名查询区域
-	private int[] identifierOfGrid;//网格标识
 	private int timestamp;//当期用户的时间戳
 	private Map<Integer, List<User>> cacheSpace;//缓存内容：时间戳+result
+	private int count=0;
 	
 	
 	/**
@@ -77,10 +77,16 @@ public class Anonymizer {
 	 * @return 返回该用户是否在缓存中
 	 */
 	public boolean isCacheContains(User user){
-		if(user.getParameter()!=null){
-			return true;
-		}else {
+		if(user.getParameter()==null){
 			return false;
+		}else {
+			int usertmp=user.getParameter().getTimestamp();
+			if(this.getCacheSpace().get(usertmp)!=null){
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 	
 	}
@@ -91,6 +97,11 @@ public class Anonymizer {
 	}
 	public void updateCache(List<User> result){
 		cacheSpace.put(timestamp,result);
+		if(this.timestamp>500){
+			for(int i=0;i<this.timestamp-500;i++){
+				cacheSpace.remove(i);
+			}
+		}
 	}
 	
 	//判断是否在用户的查询区域内
@@ -139,13 +150,6 @@ public class Anonymizer {
 		this.queryArea = queryArea;
 	}
 
-	public int[] getIdentifierOfGrid() {
-		return identifierOfGrid;
-	}
-
-	public void setIdentifierOfGrid(int[] identifierOfGrid) {
-		this.identifierOfGrid = identifierOfGrid;
-	}
 
 	public Map<Integer, List<User>> getCacheSpace() {
 		return cacheSpace;

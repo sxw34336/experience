@@ -45,8 +45,8 @@ public class Main {
 		int avercc=0;
 		for(int j=0;j<10;j++){
 			dataProcess data=new dataProcess();
-			List<User> userList=data.dataGen("src/now.txt");
 			QuerySpace querySpace=new QuerySpace(400,4300,21900,30800,200);
+			List<User> userList=data.dataGen("src/now.txt",querySpace);			
 			Anonymizer anonymizer=new Anonymizer();
 			LBS lbs=new LBS();
 			Map<Integer, List<User>> cacheSpace= new HashMap<>();
@@ -63,7 +63,7 @@ public class Main {
 			for(User user:userList){
 				if(!(anonymizer.isCacheContains(user))){	
 					user.setParameter(new Parameter(600, 20, timestamp++));
-					Map<String, Object> userMSG=user.generateMSG(500, 50, userList);//用户生成发送信息(r,k,userlist)
+					Map<String, Object> userMSG=user.generateMSG(500, 60, userList);//用户生成发送信息(r,k,userlist)
 					ccostu2a++;
 					//System.out.println(userMSG);
 					long time1 = System.currentTimeMillis();
@@ -73,7 +73,7 @@ public class Main {
 					Map<String, Object> MSGa2l=anonymizer.generateMSGA2L(userMSG);//匿名器生成信息
 					ccostu2l++;
 					long time2 = System.currentTimeMillis();
-					List<User> result=lbs.search(MSGa2l, userList, querySpace);//LBS查询得到结果
+					List<User> result=lbs.search(MSGa2l, userList);//LBS查询得到结果
 					ccostu2l++;
 					long time3 = System.currentTimeMillis();
 					anonymizer.updateCache(result);					
@@ -94,7 +94,7 @@ public class Main {
 					long once =time2-time1;
 					sumtime+=once;
 				}	
-				communicationcost=ccostu2a+ccostu2l;
+				communicationcost+=ccostu2a+ccostu2l;
 			}
 			averagetime+=sumtime;
 			avercc+=communicationcost;
@@ -102,7 +102,7 @@ public class Main {
 		}
 		averagetime=averagetime/10;
 		avercc=avercc/10;
-		System.out.println("平均时间："+averagetime);
+		System.out.println("平均时间："+averagetime+" ms");
 		System.out.println("平均通信次数："+avercc);
 /*		long endTime = System.currentTimeMillis();
 		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");*/

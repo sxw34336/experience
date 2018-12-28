@@ -171,6 +171,21 @@ public class User {
 		}
 	};
 	
+	/**
+	 * 
+	 * @param beforeresult 经过匿名器粗过滤后的结果
+	 * @param r 查询半径
+	 * @return 用户精过滤结果
+	 */
+	public List<User> refine(List<User> beforeresult,int r){
+		List<User> afterresult=new ArrayList<>();
+		for(User poi:beforeresult){
+			if(getDistance(poi)<=r){
+				afterresult.add(poi);
+			}
+		}
+		return afterresult;
+	}
 
 	/**
      * AES加密字符串

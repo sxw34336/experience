@@ -26,7 +26,7 @@ public class LBS {
 	 * @param querySpace 整个查询空间
 	 * @return 返回查询结果
 	 */
-	public List<User> search(Map<String, Object> MSGa2l,List<User> poisList,QuerySpace querySpace){
+	public List<User> search(Map<String, Object> MSGa2l,List<User> poisList){
 		Area queryArea = (Area) MSGa2l.get("C-Region");
 		int poi_type = (int) MSGa2l.get("POI");
 		Parameter parameter=(Parameter) MSGa2l.get("PARAMETER");
@@ -70,7 +70,7 @@ public class LBS {
 	 * @return 返回是否在查询区域内（非网格）
 	 */
 	private boolean isIN(Area queryArea,User poi){
-		if(poi.getX()<=queryArea.getMaxx()&&poi.getX()>=queryArea.getMinx()&&poi.getY()<=queryArea.getMaxy()&&poi.getY()>=queryArea.getMiny()){
+		if(poi.getGridx()<=queryArea.getMaxx()&&poi.getGridx()>=queryArea.getMinx()&&poi.getGridy()<=queryArea.getMaxy()&&poi.getGridy()>=queryArea.getMiny()){
 			return true;
 		}else{
 			return false;

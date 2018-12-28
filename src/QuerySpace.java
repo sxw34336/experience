@@ -11,8 +11,8 @@ public class QuerySpace {
 	private int xlength;//查询区域宽度
 	private int ylength;//查询区域长度
 	private int ygrid;//查询区域单元格长度
-	private int xgrid;//查询区域单元格宽度
-	
+	private int xgrid;//查询区域单元格宽度	
+
 	QuerySpace(int startx,int starty,int endx,int endy,int n){
 		this.startx=startx;
 		this.starty=starty;

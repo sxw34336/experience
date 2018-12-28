@@ -15,7 +15,7 @@ public class dataProcess {
 	
 	
 	
-	public static List<User> dataGen(String url){
+	public static List<User> dataGen(String url,QuerySpace querySpace){
 		BufferedReader bfr=null;
 		try {
 			bfr=new BufferedReader(new FileReader(url));
@@ -24,7 +24,6 @@ public class dataProcess {
 		}
 		List<User> pointList=new ArrayList<User>();
 		String line;
-		QuerySpace querySpace=new QuerySpace(400,4300,21900,30800,200);
 		try {
 			while ((line=bfr.readLine())!=null) {
 				String[] content=line.split("	");
