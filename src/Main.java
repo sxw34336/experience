@@ -2,8 +2,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.w3c.dom.UserDataHandler;
+import org.w3c.dom.ls.LSException;
 
 
 public class Main {
@@ -40,7 +42,7 @@ public class Main {
         // 解密
         byte[] decrypt = lbs.decrypt(encrypt, password);
         System.out.println("解密后的内容：" + new String(decrypt)); */ 
-		
+		int averageLastTime=0;
 		int averagetime=0;
 		int avercc=0;
 		for(int j=0;j<10;j++){
@@ -52,18 +54,23 @@ public class Main {
 			Map<Integer, List<User>> cacheSpace= new HashMap<>();
 			anonymizer.setCacheSpace(cacheSpace);
 			lbs.querySpace=querySpace;
-	/*		long startTime = System.currentTimeMillis();*/
+			long startTime = System.currentTimeMillis();
 			int radius=0;
 			int k=0;
 			int timestamp=0;
 			long sumtime=0;//运行时间
+			long lasttime=0;
 			int ccostu2a=0;//暂定通信开销
 			int ccostu2l=0;
 			int communicationcost=0;
+			
 			for(User user:userList){
-				if(!(anonymizer.isCacheContains(user))){	
+				if(!(anonymizer.isCacheContains(user))){
+					Random random1=new Random();
+					Random random2=new Random();
 					user.setParameter(new Parameter(600, 20, timestamp++));
-					Map<String, Object> userMSG=user.generateMSG(500, 60, userList);//用户生成发送信息(r,k,userlist)
+					long start=System.currentTimeMillis();
+					Map<String, Object> userMSG=user.generateMSG(1000, 25, userList);//用户生成发送信息(r,k,userlist)
 					ccostu2a++;
 					//System.out.println(userMSG);
 					long time1 = System.currentTimeMillis();
@@ -82,6 +89,7 @@ public class Main {
 					long time4 = System.currentTimeMillis();
 					long once =time4-time3+time2-time1;
 					sumtime+=once;
+					lasttime+=time1-start;
 				}else {
 					ccostu2a++;
 					long time1 = System.currentTimeMillis();
@@ -93,18 +101,34 @@ public class Main {
 					long time2 = System.currentTimeMillis();
 					long once =time2-time1;
 					sumtime+=once;
+					//lasttime+=once;
+					
 				}	
-				communicationcost+=ccostu2a+ccostu2l;
+				communicationcost=ccostu2a+ccostu2l;
 			}
+			long end=System.currentTimeMillis();		
+			averageLastTime+=lasttime;
 			averagetime+=sumtime;
 			avercc+=communicationcost;
-			System.out.println("匿名器时间开销："+sumtime+" ms");
 		}
+		averageLastTime/=10;
 		averagetime=averagetime/10;
 		avercc=avercc/10;
 		System.out.println("平均时间："+averagetime+" ms");
 		System.out.println("平均通信次数："+avercc);
-/*		long endTime = System.currentTimeMillis();
-		System.out.println("程序运行时间：" + (endTime - startTime) + "ms");*/
+		System.out.println("总运行时间："+averageLastTime+" ms");
+		long endTime = System.currentTimeMillis();
+		//测试knn
+		/*dataProcess data=new dataProcess();
+		QuerySpace querySpace=new QuerySpace(400,4300,21900,30800,200);
+		List<User> userList=data.dataGen("src/now.txt",querySpace);			
+		Anonymizer anonymizer=new Anonymizer();
+		LBS lbs=new LBS();
+		Map<Integer, List<User>> cacheSpace= new HashMap<>();
+		anonymizer.setCacheSpace(cacheSpace);
+		lbs.querySpace=querySpace;
+		for(User user : userList){
+			System.out.println("user:"+user.getUserID()+"   "+user.searchKnn2(500, 10, userList));
+		}*/
 }
 }

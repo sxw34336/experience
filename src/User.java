@@ -153,7 +153,7 @@ public class User {
 		}
 	}
 	
-	public void crateHeap(int k,List<User> topkList){
+	public void createHeap(int k,List<User> topkList){
 		int i;
 		int pos=k/2;
 		for(i=pos;i>=1;i--){
@@ -283,7 +283,7 @@ public class User {
 			topkList.add(candidate.get(j));
 		}
 		//System.out.println("topk:"+topkList.size());
-		crateHeap(k, topkList);
+		createHeap(k, topkList);
 		for(int z=k;z<candidate.size();z++){
 			if(getDistance(candidate.get(z))<getDistance(topkList.get(0))){
 				topkList.set(0, candidate.get(z));
