@@ -45,6 +45,7 @@ public class Main {
 		int averageLastTime=0;
 		int averagetime=0;
 		int avercc=0;
+		int answerByA=0;
 		for(int j=0;j<10;j++){
 			dataProcess data=new dataProcess();
 			QuerySpace querySpace=new QuerySpace(400,4300,21900,30800,200);
@@ -56,7 +57,7 @@ public class Main {
 			lbs.querySpace=querySpace;
 			long startTime = System.currentTimeMillis();
 			int radius=0;
-			int k=0;
+			int k=0;			
 			int timestamp=0;
 			long sumtime=0;//运行时间
 			long lasttime=0;
@@ -66,11 +67,9 @@ public class Main {
 			
 			for(User user:userList){
 				if(!(anonymizer.isCacheContains(user))){
-					Random random1=new Random();
-					Random random2=new Random();
-					user.setParameter(new Parameter(600, 20, timestamp++));
+					user.setParameter(new Parameter(400, 20, timestamp++));
 					long start=System.currentTimeMillis();
-					Map<String, Object> userMSG=user.generateMSG(1000, 25, userList);//用户生成发送信息(r,k,userlist)
+					Map<String, Object> userMSG=user.generateMSG(100, 40, userList);//用户生成发送信息(r,k,userlist)
 					ccostu2a++;
 					//System.out.println(userMSG);
 					long time1 = System.currentTimeMillis();
@@ -91,6 +90,7 @@ public class Main {
 					sumtime+=once;
 					lasttime+=time1-start;
 				}else {
+					answerByA++;
 					ccostu2a++;
 					long time1 = System.currentTimeMillis();
 					anonymizer.cacheUserInfo(user, radius);//匿名器存储用户查询信息
@@ -101,8 +101,8 @@ public class Main {
 					long time2 = System.currentTimeMillis();
 					long once =time2-time1;
 					sumtime+=once;
-					//lasttime+=once;
 					
+					//lasttime+=once;	
 				}	
 				communicationcost=ccostu2a+ccostu2l;
 			}
@@ -111,11 +111,13 @@ public class Main {
 			averagetime+=sumtime;
 			avercc+=communicationcost;
 		}
+		answerByA/=10;
 		averageLastTime/=10;
 		averagetime=averagetime/10;
 		avercc=avercc/10;
 		System.out.println("平均时间："+averagetime+" ms");
 		System.out.println("平均通信次数："+avercc);
+		System.out.println("由匿名服务器回答次数"+answerByA);
 		System.out.println("总运行时间："+averageLastTime+" ms");
 		long endTime = System.currentTimeMillis();
 		//测试knn

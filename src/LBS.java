@@ -33,7 +33,7 @@ public class LBS {
 		int distance=parameter.getDiatance();
 		int direction=parameter.getDirection();
 		Area realArea=resolve(queryArea, distance,direction);
-		//System.out.println("minx:"+realArea.getMinx()+"maxx:"+realArea.getMaxx());
+		//System.out.println((realArea.getMaxx()-realArea.getMinx())*(realArea.getMaxy()-realArea.getMiny()));
 		List<User> resultList=new ArrayList<User>();
 		for(User poi:poisList){
 			if(isIN(realArea, poi)&&poi.getPoiClass()==poi_type){
@@ -41,7 +41,7 @@ public class LBS {
 				resultList.add(poi);
 			}
 		}
-		//System.out.println(resultList);
+		//System.out.println(resultList.size());
 		return resultList;
 	}
 	
@@ -70,7 +70,7 @@ public class LBS {
 	 * @return 返回是否在查询区域内（非网格）
 	 */
 	private boolean isIN(Area queryArea,User poi){
-		if(poi.getGridx()<=queryArea.getMaxx()&&poi.getGridx()>=queryArea.getMinx()&&poi.getGridy()<=queryArea.getMaxy()&&poi.getGridy()>=queryArea.getMiny()){
+		if(poi.getX()<=queryArea.getMaxx()&&poi.getX()>=queryArea.getMinx()&&poi.getY()<=queryArea.getMaxy()&&poi.getY()>=queryArea.getMiny()){
 			return true;
 		}else{
 			return false;
