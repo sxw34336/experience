@@ -56,8 +56,8 @@ public class Main {
 			anonymizer.setCacheSpace(cacheSpace);
 			lbs.querySpace=querySpace;
 			long startTime = System.currentTimeMillis();
-			int radius=0;
-			int k=0;			
+			int radius=500;
+			int k=70;
 			int timestamp=0;
 			long sumtime=0;//运行时间
 			long lasttime=0;
@@ -69,9 +69,8 @@ public class Main {
 				if(!(anonymizer.isCacheContains(user))){
 					user.setParameter(new Parameter(400, 20, timestamp++));
 					long start=System.currentTimeMillis();
-					Map<String, Object> userMSG=user.generateMSG(100, 40, userList);//用户生成发送信息(r,k,userlist)
-					ccostu2a++;
-					//System.out.println(userMSG);
+					Map<String, Object> userMSG=user.generateMSG(radius, k, userList);//用户生成发送信息(r,k,userlist)
+					ccostu2a+=k;//用户向匿名器发送的k条信息
 					long time1 = System.currentTimeMillis();
 					anonymizer.cacheUserInfo(user, radius);//匿名器存储用户查询信息
 					//System.out.println((List<Area>) userMSG.get("Region"));
@@ -80,7 +79,7 @@ public class Main {
 					ccostu2l++;
 					long time2 = System.currentTimeMillis();
 					List<User> result=lbs.search(MSGa2l, userList);//LBS查询得到结果
-					ccostu2l++;
+					ccostu2l+=result.size();
 					long time3 = System.currentTimeMillis();
 					anonymizer.updateCache(result);					
 					anonymizer.resultFilter();
@@ -116,7 +115,7 @@ public class Main {
 		averagetime=averagetime/10;
 		avercc=avercc/10;
 		System.out.println("平均时间："+averagetime+" ms");
-		System.out.println("平均通信次数："+avercc);
+		System.out.println("平均通信："+avercc);
 		System.out.println("由匿名服务器回答次数"+answerByA);
 		System.out.println("总运行时间："+averageLastTime+" ms");
 		long endTime = System.currentTimeMillis();
