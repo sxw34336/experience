@@ -97,8 +97,8 @@ public class Anonymizer {
 	}
 	public void updateCache(List<User> result){
 		cacheSpace.put(timestamp,result);
-		if(this.timestamp>500){
-			for(int i=0;i<this.timestamp-500;i++){
+		if(this.timestamp>700){
+			for(int i=0;i<this.timestamp-700;i++){
 				cacheSpace.remove(i);
 			}
 		}

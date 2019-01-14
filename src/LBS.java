@@ -77,6 +77,15 @@ public class LBS {
 	 }
 	}
 
+	public void moveResult(List<User> resultList){
+		int count=0;
+		for(int i=0;i<resultList.size();i++){
+			for(User poi:resultList){
+				count++;
+		}
+		}
+	
+	}
 	
 	/**
      * 解密AES加密过的字符串
