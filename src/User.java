@@ -106,12 +106,12 @@ public class User {
 	public Map<String, Object> generateMSG(Integer r,int k,List<User> userList){
 		List<Area> knnAreas=searchKnn2(r,k, userList);
 		Map<String, Object> MSGu2a=new HashMap<String, Object>();
-		MSGu2a.put("ID",userID );
+		//MSGu2a.put("ID",userID );
 		MSGu2a.put("Region", knnAreas);
-		MSGu2a.put("KEY", "K1,K2,K3,K4");
+		//MSGu2a.put("KEY", "K1,K2,K3,K4");
 		MSGu2a.put("S", moveQueryArea(r));
 		MSGu2a.put("POI", poiClass);
-		MSGu2a.put("grid_structure", querySpace);
+		//MSGu2a.put("grid_structure", querySpace);
 		MSGu2a.put("PARAMETER", this.getParameter());
 		MSGu2a.put("timestamp", this.getParameter().getTimestamp());
 		return MSGu2a;

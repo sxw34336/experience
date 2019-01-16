@@ -64,7 +64,7 @@ public class Anonymizer {
 	public Map<String, Object> generateMSGA2L(Map<String, Object> MSGu2a){
 		Map<String, Object> MSGa2l=new HashMap<String, Object>();
 		MSGa2l.put("C-Region", this.queryArea);
-		MSGa2l.put("KEY",MSGu2a.get("KEY"));
+		//MSGa2l.put("KEY",MSGu2a.get("KEY"));
 		MSGa2l.put("PARAMETER", MSGu2a.get("PARAMETER"));
 		MSGa2l.put("grid_structure", MSGu2a.get("grid_structure"));
 		MSGa2l.put("POI", MSGu2a.get("POI"));

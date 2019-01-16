@@ -78,13 +78,17 @@ public class Main {
 					pw.write(MSGa2l.toString());
 					long time2 = System.currentTimeMillis();
 					List<User> result=lbs.search(MSGa2l, userList);//LBS查询得到结果
-					pw.write(result.toString());
+					for(User user2:result){
+						pw.write(user2.getGridx()+user2.getGridy());
+					}
 					lbs.moveResult(result);
 					//System.out.println(result.size());
 					long time3 = System.currentTimeMillis();
 					anonymizer.updateCache(result);					
 					List<User> filterList=anonymizer.resultFilter();
-					pw.write(filterList.toString());
+					for(User user3:filterList){
+						pw.write(user3.getGridx()+user3.getGridy());
+					}
 					long time4 = System.currentTimeMillis();
 					long once =time4-time3+time2-time1;
 					sumtime+=once;
